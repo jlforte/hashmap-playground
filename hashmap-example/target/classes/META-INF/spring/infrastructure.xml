@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/tx
+		   http://www.springframework.org/schema/tx/spring-tx.xsd
+		   http://www.springframework.org/schema/jee 
+		   http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+	<!-- JDNI name for EntityManagerFactory is defined in src/main/resources/META-INF/persistence.xml -->
+	<jee:jndi-lookup jndi-name="java:jboss/spring-quickstart/persistence"
+		id="entityManagerFactory" expected-type="javax.persistence.EntityManagerFactory" />
+
+	<bean id="entityManager"
+		class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<bean id="enrichmentController" class="org.jboss.spring.mvc.EnrichmentLookupRestController">
+		<property name="lookupMap" ref="enrichmentLookupMap"/> 
+	</bean>
+	
+	<bean id="accountController" class="org.jboss.spring.mvc.AccountLookupRestController">
+		<property name="lookupMap" ref="accountLookupMap"/> 
+	</bean>
+
+	<bean id="enrichmentLookupMap" class="org.jboss.spring.util.EnrichmentLookupMap">
+		<property name="map">
+			<bean class="org.springframework.beans.factory.config.MapFactoryBean">
+
+				<property name="targetMapClass">
+					<value>java.util.concurrent.ConcurrentHashMap</value>
+				</property>
+				<property name="sourceMap">
+					<map>
+						<entry key="Key1" value="1" />
+						<entry key="Key2" value="2" />
+						<entry key="Key3" value="3" />
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="accountLookupMap" class="org.jboss.spring.util.AccountLookupMap">
+		<property name="map">
+			<bean class="org.springframework.beans.factory.config.MapFactoryBean">
+
+				<property name="targetMapClass">
+					<value>java.util.concurrent.ConcurrentHashMap</value>
+				</property>
+					<property name="sourceMap">
+					<map>						
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<jee:jndi-lookup jndi-name="java:jboss/datasources/SpringQuickstartDS"
+		id="dataSource" expected-type="javax.sql.DataSource" />
+
+	<tx:jta-transaction-manager />
+
+
+</beans>
